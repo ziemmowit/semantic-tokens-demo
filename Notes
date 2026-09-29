@@ -1,0 +1,21 @@
+Semantic tokens vs primitive / palette tokens
+
+Semantic:
+- (+) Rebranding
+- (+) Lift (f. eg. Change light text everywhere after accessibility audit)
+- (+) Accessibility
+- (+) One theme -> different sites, with different look and feel
+- (+) Palette can be used as base
+- (+/-) They are good only if they server purpose, overengeenering if not
+- (-) Structure must be really well thought, not to large (which can be a limitation designers)
+- (-) Structure can quickly become irrelevant, out of date
+- (-) Can quickly become chaotic and pointless: primary-light, primary-muted, primary-subtle
+
+Palette:
+- (+) Less initial work, less decisions
+- (+) More flexible for designers
+- (+) Good mapping Figma -> Code
+- (+) Semantic structure can break, palette structure not
+- (-) You can update colors with find & replace, but only with assumption that they change absolutely everywhere
+- (-) Worse for rebranding, lifts, and accessibility.
+- (-) Harder to change one role that use common variable. Different roles can use the same variable in one version of page(accessibility, lift), different in other so search & replace can be tricky

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semantic Tokens Preposition</title>
+  <style>
+    /* =========================================================
+       1. PRIMITIVE TOKENS (palette) – not editable in the panel
+       ========================================================= */
+    :root {
+      --abc-gray-50: #f9fafb;
+      --abc-gray-100: #f3f4f6;
+      --abc-gray-200: #e5e7eb;
+      --abc-gray-500: #6b7280;
+      --abc-gray-700: #374151;
+      --abc-gray-900: #111827;
+      --abc-blue-600: #2563eb;
+      --abc-blue-700: #1d4ed8;
+      --abc-red-500: #ef4444;
+      --abc-green-500: #22c55e;
+
+      /* =========================================================
+         2. SEMANTIC TOKENS – editable in the panel
+         ========================================================= */
+      --color-text-default: var(--abc-gray-900);
+      --color-text-muted: var(--abc-gray-500);
+      --color-surface-default: #fff;
+      --color-surface-subtle: var(--abc-gray-50);
+      --color-border-default: var(--abc-gray-200);
+      --color-action-primary: var(--abc-blue-600);
+      --color-action-primary-hover: var(--abc-blue-700);
+      --color-action-primary-text: #fff;
+      --color-link: var(--abc-blue-600);
+      --color-status-error: var(--abc-red-500);
+      --color-status-success: var(--abc-green-500);
+
+      --space-control-inline: 16px;
+      --space-control-block: 10px;
+      --space-card-padding: 20px;
+      --space-section-gap: 64px;
+      --space-content-gap: 24px;
+
+      --border-width-1: 1px;
+      --border-width-2: 2px;
+      --border-control-width: var(--border-width-1);
+      --border-focus-width: var(--border-width-2);
+
+      --radius-control: 6px;
+      --radius-card: 12px;
+
+      --text-body-size: 16px;
+      --text-caption-size: 13px;
+      --text-heading-size: 32px;
+      --text-body-weight: 400;
+      --text-heading-weight: 700;
+    }
+
+    /* =========================================================
+       3. BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: var(--text-body-size);
+      font-weight: var(--text-body-weight);
+      line-height: 1.6;
+      color: var(--color-text-default);
+      background: var(--color-surface-default);
+      padding-right: 380px; /* room for the token panel */
+    }
+
+    a {
+      color: var(--color-link);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    a:hover { color: var(--color-action-primary-hover); }
+
+    :focus-visible {
+      outline: var(--border-focus-width) solid var(--color-action-primary);
+      outline-offset: 2px;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 var(--space-content-gap);
+      line-height: 1.2;
+      font-weight: var(--text-heading-weight);
+    }
+    h1 { font-size: var(--text-heading-size); }
+    h2 { font-size: calc(var(--text-heading-size) * 0.75); }
+    h3 { font-size: calc(var(--text-heading-size) * 0.6); }
+
+    p { margin: 0 0 var(--space-content-gap); }
+    p:last-child { margin-bottom: 0; }
+
+    img { display: block; max-width: 100%; }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 var(--space-content-gap);
+    }
+
+    .caption {
+      font-size: var(--text-caption-size);
+      color: var(--color-text-muted);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(var(--space-control-inline) / 2);
+      padding: var(--space-control-block) var(--space-control-inline);
+      font: inherit;
+      font-weight: var(--text-heading-weight);
+      line-height: 1.2;
+      color: var(--color-action-primary-text);
+      background: var(--color-action-primary);
+      border: var(--border-control-width) solid var(--color-action-primary);
+      border-radius: var(--radius-control);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color .15s, border-color .15s;
+    }
+    .btn:hover {
+      color: var(--color-action-primary-text);
+      background: var(--color-action-primary-hover);
+      border-color: var(--color-action-primary-hover);
+    }
+    .btn--secondary {
+      color: var(--color-action-primary);
+      background: transparent;
+      border-color: var(--color-border-default);
+    }
+    .btn--secondary:hover {
+      color: var(--color-action-primary-hover);
+      background: var(--color-surface-subtle);
+      border-color: var(--color-action-primary-hover);
+    }
+
+    /* Inputs */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-control-block) / 2);
+    }
+    .field label {
+      font-size: var(--text-caption-size);
+      font-weight: var(--text-heading-weight);
+    }
+    .input {
+      width: 100%;
+      padding: var(--space-control-block) var(--space-control-inline);
+      font: inherit;
+      color: var(--color-text-default);
+      background: var(--color-surface-default);
+      border: var(--border-control-width) solid var(--color-border-default);
+      border-radius: var(--radius-control);
+    }
+    .input::placeholder { color: var(--color-text-muted); }
+    .input--error { border-color: var(--color-status-error); }
+    .input--success { border-color: var(--color-status-success); }
+    .field__hint { font-size: var(--text-caption-size); color: var(--color-text-muted); }
+    .field__hint--error { color: var(--color-status-error); }
+    .field__hint--success { color: var(--color-status-success); }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: calc(var(--space-control-block) / 3) calc(var(--space-control-inline) / 2);
+      font-size: var(--text-caption-size);
+      font-weight: var(--text-heading-weight);
+      line-height: 1.4;
+      border-radius: var(--radius-control);
+      border: var(--border-width-1) solid transparent;
+    }
+    .badge--error {
+      color: var(--color-status-error);
+      border-color: var(--color-status-error);
+    }
+    .badge--success {
+      color: var(--color-status-success);
+      border-color: var(--color-status-success);
+    }
+    .badge--muted {
+      color: var(--color-text-muted);
+      background: var(--color-surface-subtle);
+      border-color: var(--color-border-default);
+    }
+
+    /* =========================================================
+       4. HEADER + NAV
+       ========================================================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--color-surface-default);
+      border-bottom: var(--border-width-1) solid var(--color-border-default);
+    }
+    .site-header__bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-content-gap);
+      padding-top: var(--space-control-block);
+      padding-bottom: var(--space-control-block);
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(var(--space-control-inline) / 2);
+      font-weight: var(--text-heading-weight);
+      font-size: calc(var(--text-body-size) * 1.15);
+      color: var(--color-text-default);
+      text-decoration: none;
+    }
+    .logo__mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-control);
+      background: var(--color-action-primary);
+    }
+
+    .hamburger {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: var(--space-control-block) calc(var(--space-control-inline) / 2);
+      background: transparent;
+      border: var(--border-control-width) solid var(--color-border-default);
+      border-radius: var(--radius-control);
+      cursor: pointer;
+    }
+    .hamburger:hover { background: var(--color-surface-subtle); }
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--color-text-default);
+      border-radius: 1px;
+      transition: transform .2s, opacity .2s;
+    }
+    .hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .site-nav {
+      display: none;
+      border-top: var(--border-width-1) solid var(--color-border-default);
+      background: var(--color-surface-subtle);
+    }
+    .site-nav.is-open { display: block; }
+    .site-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: var(--space-control-block) 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(var(--space-control-inline) / 2);
+    }
+    .site-nav a {
+      display: inline-block;
+      padding: var(--space-control-block) var(--space-control-inline);
+      color: var(--color-text-default);
+      text-decoration: none;
+      border-radius: var(--radius-control);
+    }
+    .site-nav a:hover { color: var(--color-action-primary-hover); background: var(--color-surface-default); }
+    .site-nav a.is-active { color: var(--color-action-primary); font-weight: var(--text-heading-weight); }
+
+    /* =========================================================
+       5. CONTENT
+       ========================================================= */
+    main { padding: var(--space-section-gap) 0; }
+    .section + .section { margin-top: var(--space-section-gap); }
+    .section__header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-content-gap);
+      margin-bottom: var(--space-content-gap);
+    }
+    .section__header h2 { margin: 0; }
+
+    /* Callout */
+    .callout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-content-gap);
+      padding: var(--space-card-padding);
+      background: var(--color-surface-subtle);
+      border: var(--border-width-1) solid var(--color-border-default);
+      border-radius: var(--radius-card);
+    }
+    .callout__body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-content-gap);
+    }
+    .callout__body h1, .callout__body p { margin: 0; }
+    .callout__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(var(--space-control-inline) / 2);
+    }
+    .callout__body > .badge { align-self: flex-start; }
+    .callout__media {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border-radius: var(--radius-card);
+      background: var(--color-border-default);
+    }
+    .callout__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* Teasers */
+    .teaser-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-content-gap);
+    }
+    .teaser {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--color-surface-default);
+      border: var(--border-width-1) solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .teaser:hover { border-color: var(--color-action-primary); }
+    .teaser__media {
+      position: relative;
+      flex: 0 0 auto;
+      aspect-ratio: 16 / 10;
+      background: var(--color-surface-subtle);
+    }
+    .teaser__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .teaser__body {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-content-gap) / 2);
+      padding: var(--space-card-padding);
+    }
+    .teaser__meta {
+      display: flex;
+      align-items: center;
+      gap: calc(var(--space-control-inline) / 2);
+    }
+    .teaser__body h3 { margin: 0; }
+    .teaser__body h3 a { color: var(--color-text-default); text-decoration: none; }
+    .teaser__body h3 a:hover { color: var(--color-action-primary-hover); }
+    .teaser__excerpt { margin: 0; color: var(--color-text-muted); }
+    .teaser__more { margin-top: auto; font-weight: var(--text-heading-weight); }
+
+    /* Article */
+    .article { max-width: 680px; }
+    .article__lead {
+      font-size: calc(var(--text-body-size) * 1.15);
+      color: var(--color-text-muted);
+    }
+    .article blockquote {
+      margin: var(--space-content-gap) 0;
+      padding: var(--space-control-block) var(--space-card-padding);
+      border-left: var(--border-width-2) solid var(--color-action-primary);
+      background: var(--color-surface-subtle);
+      border-radius: 0 var(--radius-control) var(--radius-control) 0;
+    }
+    .article ul { padding-left: 1.25em; margin: 0 0 var(--space-content-gap); }
+    .article li + li { margin-top: calc(var(--space-content-gap) / 3); }
+
+    /* Newsletter form */
+    .newsletter {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-content-gap);
+      padding: var(--space-card-padding);
+      border: var(--border-width-1) solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      background: var(--color-surface-subtle);
+    }
+    .newsletter__actions { display: flex; align-items: flex-end; }
+
+    /* =========================================================
+       6. FOOTER
+       ========================================================= */
+    .site-footer {
+      padding: var(--space-section-gap) 0 var(--space-content-gap);
+      background: var(--color-surface-subtle);
+      border-top: var(--border-width-1) solid var(--color-border-default);
+    }
+    .site-footer__grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: var(--space-content-gap);
+      margin-bottom: var(--space-section-gap);
+    }
+    .site-footer h3 { font-size: var(--text-body-size); margin-bottom: calc(var(--space-content-gap) / 2); }
+    .site-footer ul { list-style: none; margin: 0; padding: 0; }
+    .site-footer li + li { margin-top: calc(var(--space-content-gap) / 3); }
+    .site-footer__bottom {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-content-gap);
+      padding-top: var(--space-content-gap);
+      border-top: var(--border-width-1) solid var(--color-border-default);
+    }
+
+    /* =========================================================
+       7. TOKEN PANEL (deliberately does NOT use semantic tokens,
+          so it stays a stable tool next to the demo)
+       ========================================================= */
+    .token-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #e5e7eb;
+      background: #0f172a;
+      border-left: 1px solid #1e293b;
+      box-shadow: -8px 0 24px rgba(0,0,0,.25);
+    }
+    .token-panel__head {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .token-panel__title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .token-panel__reset {
+      font: inherit;
+      font-size: 11px;
+      color: #94a3b8;
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .token-panel__reset:hover { color: #fff; }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .preset-btn {
+      font: inherit;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      padding: 6px 10px;
+      color: #e2e8f0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color .15s, border-color .15s;
+    }
+    .preset-btn:hover { background: #334155; }
+    .preset-btn.is-active {
+      color: #fff;
+      background: #4f46e5;
+      border-color: #6366f1;
+    }
+    .token-panel__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px 24px;
+    }
+    .token-group { margin-top: 14px; }
+    .token-group__title {
+      margin: 0 0 6px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+    .token-row {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .token-row label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .token-row label .dash { color: #475569; }
+    .swatch {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .token-input {
+      width: 100%;
+      font: inherit;
+      padding: 5px 7px;
+      color: #f8fafc;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      outline: none;
+    }
+    .token-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.3); }
+    .token-input.is-dirty { border-color: #f59e0b; }
+    .token-panel__foot {
+      padding: 10px 16px;
+      border-top: 1px solid #1e293b;
+      color: #64748b;
+      font-size: 11px;
+    }
+    .token-panel__foot code { color: #94a3b8; }
+
+    /* =========================================================
+       8. RESPONSIVE
+       ========================================================= */
+    @media (max-width: 1100px) {
+      .teaser-grid { grid-template-columns: repeat(2, 1fr); }
+      .site-footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 860px) {
+      body { padding-right: 0; padding-bottom: 50vh; }
+      .token-panel {
+        top: auto;
+        left: 0;
+        width: auto;
+        height: 50vh;
+        border-left: 0;
+        border-top: 1px solid #1e293b;
+      }
+      .callout, .newsletter { grid-template-columns: 1fr; }
+      .teaser-grid, .site-footer__grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================== HEADER ====================== -->
+  <header class="site-header">
+    <div class="container site-header__bar">
+      <a class="logo" href="#">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span>Semantic Tokens Preposition</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="site-nav" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+      <div class="container">
+        <ul>
+          <li><a href="#" class="is-active">Home</a></li>
+          <li><a href="#posts">Stories</a></li>
+          <li><a href="#article">Journal</a></li>
+          <li><a href="#newsletter">Newsletter</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ====================== MAIN ====================== -->
+  <main class="container">
+
+    <!-- Callout -->
+    <section class="section" aria-labelledby="callout-title">
+      <div class="callout">
+        <div class="callout__body">
+          <span class="badge badge--muted">Featured</span>
+          <h1 id="callout-title">Lorem ipsum dolor sit amet, consectetur adipiscing</h1>
+          <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <div class="callout__actions">
+            <a class="btn" href="#article">Read more</a>
+            <a class="btn btn--secondary" href="#posts">Browse stories</a>
+          </div>
+          <p class="caption">Duis aute irure dolor in <a href="#">reprehenderit</a> in voluptate velit esse.</p>
+        </div>
+        <div class="callout__media">
+          <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=900&q=70" alt="Laptop and phone showing stock market charts" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Posts / teasers -->
+    <section class="section" id="posts" aria-labelledby="posts-title">
+      <div class="section__header">
+        <h2 id="posts-title">Latest stories</h2>
+        <a href="#">All stories →</a>
+      </div>
+      <div class="teaser-grid">
+        <article class="teaser">
+          <div class="teaser__media">
+            <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=70" alt="" loading="lazy" />
+          </div>
+          <div class="teaser__body">
+            <div class="teaser__meta">
+              <span class="badge badge--success">New</span>
+              <span class="caption">Sep 12, 2026 · 4 min</span>
+            </div>
+            <h3><a href="#">Lorem ipsum dolor sit amet consectetur</a></h3>
+            <p class="teaser__excerpt">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <a class="teaser__more" href="#">Continue reading →</a>
+          </div>
+        </article>
+
+        <article class="teaser">
+          <div class="teaser__media">
+            <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=70" alt="" loading="lazy" />
+          </div>
+          <div class="teaser__body">
+            <div class="teaser__meta">
+              <span class="badge badge--muted">Markets</span>
+              <span class="caption">Sep 3, 2026 · 7 min</span>
+            </div>
+            <h3><a href="#">Sed ut perspiciatis unde omnis iste natus</a></h3>
+            <p class="teaser__excerpt">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.</p>
+            <a class="teaser__more" href="#">Continue reading →</a>
+          </div>
+        </article>
+
+        <article class="teaser">
+          <div class="teaser__media">
+            <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=800&q=70" alt="" loading="lazy" />
+          </div>
+          <div class="teaser__body">
+            <div class="teaser__meta">
+              <span class="badge badge--error">Archived</span>
+              <span class="caption">Aug 21, 2026 · 3 min</span>
+            </div>
+            <h3><a href="#">At vero eos et accusamus et iusto odio</a></h3>
+            <p class="teaser__excerpt">Dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias.</p>
+            <a class="teaser__more" href="#">Continue reading →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Article -->
+    <section class="section" id="article" aria-labelledby="article-title">
+      <article class="article">
+        <p class="caption">Journal · 5 min read</p>
+        <h2 id="article-title">Neque porro quisquam est qui dolorem ipsum</h2>
+        <p class="article__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quia voluptas sit aspernatur aut odit aut fugit, sed quia <em>consequuntur</em> magni dolores eos qui ratione.</p>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <blockquote>
+          <p>“Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.”</p>
+        </blockquote>
+        <h3>Semantic tokens vs primitive / palette tokens</h3>
+        <p><strong>Semantic</strong></p>
+        <ul>
+          <li><strong>(+)</strong> Rebranding</li>
+          <li><strong>(+)</strong> Lift (f. eg. Change light text everywhere after accessibility audit)</li>
+          <li><strong>(+)</strong> Accessibility</li>
+          <li><strong>(+)</strong> One theme -> different sites, with different look and feel</li>
+          <li><strong>(+)</strong> Palette can be used as base</li>
+          <li><strong>(+/-)</strong> They are good only if they server purpose, overengeenering if not</li>
+          <li><strong>(-)</strong> Structure must be really well thought, not to large (which can be a limitation designers)</li>
+          <li><strong>(-)</strong> Structure can quickly become irrelevant, out of date</li>
+          <li><strong>(-)</strong> Can quickly become chaotic and pointless: primary-light, primary-muted, primary-subtle</li>
+        </ul>
+        <p><strong>Palette</strong></p>
+        <ul>
+          <li><strong>(+)</strong> Less initial work, less decisions</li>
+          <li><strong>(+)</strong> More flexible for designers</li>
+          <li><strong>(+)</strong> Good mapping Figma -> Code</li>
+          <li><strong>(+)</strong> Semantic structure can break, palette structure not</li>
+          <li><strong>(-)</strong> You can update colors with find &amp; replace, but only with assumption that they change absolutely everywhere</li>
+          <li><strong>(-)</strong> Worse for rebranding, lifts, and accessibility.</li>
+          <li><strong>(-)</strong> Harder to change one role that use common variable. Different roles can use the same variable in one version of page(accessibility, lift), different in other so search &amp; replace can be tricky</li>
+        </ul>
+        <p>Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Read the <a href="#">full field notes</a>.</p>
+      </article>
+    </section>
+
+    <!-- Newsletter / form controls -->
+    <section class="section" id="newsletter" aria-labelledby="newsletter-title">
+      <div class="newsletter">
+        <div>
+          <h2 id="newsletter-title">Newsletter</h2>
+          <p class="caption">Nemo enim ipsam voluptatem quia voluptas sit aspernatur. Once a month, no spam.</p>
+        </div>
+        <form onsubmit="return false;">
+          <div class="field">
+            <label for="email-ok">Email address</label>
+            <input class="input input--success" id="email-ok" type="email" value="anna@example.com" />
+            <span class="field__hint field__hint--success">Looks good.</span>
+          </div>
+          <div class="field" style="margin-top: var(--space-content-gap)">
+            <label for="email-bad">Confirm email address</label>
+            <input class="input input--error" id="email-bad" type="email" value="anna@exampl" />
+            <span class="field__hint field__hint--error">Email addresses do not match.</span>
+          </div>
+          <div class="field" style="margin-top: var(--space-content-gap)">
+            <label for="name">First name (optional)</label>
+            <input class="input" id="name" type="text" placeholder="e.g. Anna" />
+            <span class="field__hint">Used only to greet you.</span>
+          </div>
+          <div class="newsletter__actions" style="margin-top: var(--space-content-gap)">
+            <button class="btn" type="submit">Subscribe</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================== FOOTER ====================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div>
+          <a class="logo" href="#">
+            <span class="logo__mark" aria-hidden="true"></span>
+            <span>Semantic Tokens Preposition</span>
+          </a>
+          <p class="caption" style="margin-top: var(--space-content-gap)">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div>
+          <h3>Explore</h3>
+          <ul>
+            <li><a href="#">Stories</a></li>
+            <li><a href="#">Journal</a></li>
+            <li><a href="#">Gallery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Company</h3>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <span class="caption">© 2026 Semantic Tokens Preposition. All rights reserved.</span>
+        <span class="caption"><a href="#">Privacy policy</a> · <a href="#">Terms</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====================== TOKEN PANEL ====================== -->
+  <aside class="token-panel" aria-label="Semantic tokens panel">
+    <div class="token-panel__head">
+      <h2 class="token-panel__title">
+        <span>Semantic tokens</span>
+        <button class="token-panel__reset" id="reset-btn" type="button">reset</button>
+      </h2>
+      <div class="presets" id="presets"></div>
+    </div>
+    <div class="token-panel__body" id="token-body"></div>
+    <div class="token-panel__foot">
+      A value can be a color (<code>#2563eb</code>), a size (<code>12px</code>) or a reference to the primitive palette (<code>var(--abc-blue-600)</code>).
+    </div>
+  </aside>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------- Hamburger ---------- */
+      const hamburger = document.getElementById('hamburger');
+      const nav = document.getElementById('site-nav');
+      hamburger.addEventListener('click', () => {
+        const open = nav.classList.toggle('is-open');
+        hamburger.setAttribute('aria-expanded', String(open));
+        hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+
+      /* ---------- Token definitions ---------- */
+      const TOKEN_GROUPS = [
+        {
+          title: 'Color',
+          type: 'color',
+          tokens: [
+            'color-text-default',
+            'color-text-muted',
+            'color-surface-default',
+            'color-surface-subtle',
+            'color-border-default',
+            'color-action-primary',
+            'color-action-primary-hover',
+            'color-action-primary-text',
+            'color-link',
+            'color-status-error',
+            'color-status-success',
+          ],
+        },
+        {
+          title: 'Space',
+          type: 'size',
+          tokens: [
+            'space-control-inline',
+            'space-control-block',
+            'space-card-padding',
+            'space-section-gap',
+            'space-content-gap',
+          ],
+        },
+        {
+          title: 'Border',
+          type: 'size',
+          tokens: [
+            'border-width-1',
+            'border-width-2',
+            'border-control-width',
+            'border-focus-width',
+          ],
+        },
+        {
+          title: 'Radius',
+          type: 'size',
+          tokens: ['radius-control', 'radius-card'],
+        },
+        {
+          title: 'Text',
+          type: 'size',
+          tokens: [
+            'text-body-size',
+            'text-caption-size',
+            'text-heading-size',
+            'text-body-weight',
+            'text-heading-weight',
+          ],
+        },
+      ];
+
+      /* ---------- Presets ---------- */
+      const DEFAULT = {
+        'color-text-default': 'var(--abc-gray-900)',
+        'color-text-muted': 'var(--abc-gray-500)',
+        'color-surface-default': '#fff',
+        'color-surface-subtle': 'var(--abc-gray-50)',
+        'color-border-default': 'var(--abc-gray-200)',
+        'color-action-primary': 'var(--abc-blue-600)',
+        'color-action-primary-hover': 'var(--abc-blue-700)',
+        'color-action-primary-text': '#fff',
+        'color-link': 'var(--abc-blue-600)',
+        'color-status-error': 'var(--abc-red-500)',
+        'color-status-success': 'var(--abc-green-500)',
+
+        'space-control-inline': '16px',
+        'space-control-block': '10px',
+        'space-card-padding': '20px',
+        'space-section-gap': '64px',
+        'space-content-gap': '24px',
+
+        'border-width-1': '1px',
+        'border-width-2': '2px',
+        'border-control-width': 'var(--border-width-1)',
+        'border-focus-width': 'var(--border-width-2)',
+
+        'radius-control': '6px',
+        'radius-card': '12px',
+
+        'text-body-size': '16px',
+        'text-caption-size': '13px',
+        'text-heading-size': '32px',
+        'text-body-weight': '400',
+        'text-heading-weight': '700',
+      };
+
+      const PRESETS = {
+        'Default': DEFAULT,
+
+        'UI refresh': Object.assign({}, DEFAULT, {
+          'color-text-default': '#1c1917',
+          'color-text-muted': '#78716c',
+          'color-surface-default': '#fffdf9',
+          'color-surface-subtle': '#f5f0e8',
+          'color-border-default': '#e7e0d4',
+          'color-action-primary': '#7c3aed',
+          'color-action-primary-hover': '#6d28d9',
+          'color-link': '#7c3aed',
+          'color-status-error': '#e11d48',
+          'color-status-success': '#059669',
+          'space-control-inline': '22px',
+          'space-control-block': '14px',
+          'space-card-padding': '28px',
+          'space-section-gap': '96px',
+          'space-content-gap': '28px',
+          'radius-control': '999px',
+          'radius-card': '24px',
+          'text-heading-size': '40px',
+          'text-heading-weight': '800',
+          'text-body-weight': '400',
+        }),
+
+        'A11y Color Blindness': Object.assign({}, DEFAULT, {
+          /* Okabe–Ito palette: distinguishable under deuteranopia / protanopia */
+          'color-text-default': '#000000',
+          'color-text-muted': '#4a4a4a',
+          'color-border-default': '#8c8c8c',
+          'color-action-primary': '#0072b2',
+          'color-action-primary-hover': '#004c78',
+          'color-link': '#0072b2',
+          'color-status-error': '#d55e00',
+          'color-status-success': '#0072b2',
+          'border-control-width': 'var(--border-width-2)',
+          'border-focus-width': '3px',
+          'text-body-weight': '500',
+        }),
+
+        'A11y Dark Mode': Object.assign({}, DEFAULT, {
+          'color-text-default': '#f1f5f9',
+          'color-text-muted': '#a3b1c2',
+          'color-surface-default': '#0b1220',
+          'color-surface-subtle': '#151e2e',
+          'color-border-default': '#2c3a4f',
+          'color-action-primary': '#60a5fa',
+          'color-action-primary-hover': '#93c5fd',
+          'color-action-primary-text': '#0b1220',
+          'color-link': '#93c5fd',
+          'color-status-error': '#fb7185',
+          'color-status-success': '#4ade80',
+          'border-focus-width': '3px',
+        }),
+
+        'A11y Low Vision': Object.assign({}, DEFAULT, {
+          /* large text, maximum contrast, thick borders, large touch targets */
+          'color-text-default': '#000000',
+          'color-text-muted': '#333333',
+          'color-surface-default': '#ffffff',
+          'color-surface-subtle': '#f2f2f2',
+          'color-border-default': '#000000',
+          'color-action-primary': '#0000a8',
+          'color-action-primary-hover': '#000070',
+          'color-action-primary-text': '#ffffff',
+          'color-link': '#0000a8',
+          'color-status-error': '#a80000',
+          'color-status-success': '#006400',
+          'space-control-inline': '28px',
+          'space-control-block': '18px',
+          'space-card-padding': '32px',
+          'space-section-gap': '96px',
+          'space-content-gap': '32px',
+          'border-width-1': '2px',
+          'border-width-2': '4px',
+          'border-control-width': 'var(--border-width-2)',
+          'border-focus-width': '5px',
+          'radius-control': '4px',
+          'radius-card': '8px',
+          'text-body-size': '22px',
+          'text-caption-size': '18px',
+          'text-heading-size': '44px',
+          'text-body-weight': '500',
+          'text-heading-weight': '800',
+        }),
+
+        'Compact layout': Object.assign({}, DEFAULT, {
+          'space-control-inline': '10px',
+          'space-control-block': '5px',
+          'space-card-padding': '12px',
+          'space-section-gap': '28px',
+          'space-content-gap': '12px',
+          'radius-control': '3px',
+          'radius-card': '6px',
+          'text-body-size': '14px',
+          'text-caption-size': '11px',
+          'text-heading-size': '22px',
+        }),
+      };
+
+      /* ---------- Engine ---------- */
+      const root = document.documentElement;
+      const inputs = new Map(); // token -> <input>
+      let activePreset = 'Default';
+
+      function setToken(name, value) {
+        root.style.setProperty('--' + name, value);
+      }
+
+      function markDirty(input, tokenName) {
+        const presetValue = PRESETS[activePreset][tokenName];
+        input.classList.toggle('is-dirty', input.value.trim() !== presetValue);
+      }
+
+      function applyPreset(name) {
+        activePreset = name;
+        const values = PRESETS[name];
+        Object.keys(values).forEach((token) => {
+          setToken(token, values[token]);
+          const input = inputs.get(token);
+          if (input) {
+            input.value = values[token];
+            input.classList.remove('is-dirty');
+          }
+        });
+        document.querySelectorAll('.preset-btn').forEach((btn) => {
+          btn.classList.toggle('is-active', btn.dataset.preset === name);
+        });
+      }
+
+      /* ---------- Panel rendering ---------- */
+      const presetsEl = document.getElementById('presets');
+      Object.keys(PRESETS).forEach((name) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'preset-btn';
+        btn.textContent = name;
+        btn.dataset.preset = name;
+        btn.addEventListener('click', () => applyPreset(name));
+        presetsEl.appendChild(btn);
+      });
+
+      const bodyEl = document.getElementById('token-body');
+      TOKEN_GROUPS.forEach((group) => {
+        const groupEl = document.createElement('section');
+        groupEl.className = 'token-group';
+
+        const title = document.createElement('h3');
+        title.className = 'token-group__title';
+        title.textContent = group.title;
+        groupEl.appendChild(title);
+
+        group.tokens.forEach((tokenName) => {
+          const row = document.createElement('div');
+          row.className = 'token-row';
+
+          const label = document.createElement('label');
+          label.htmlFor = 'tok-' + tokenName;
+          if (group.type === 'color') {
+            const swatch = document.createElement('span');
+            swatch.className = 'swatch';
+            swatch.style.background = 'var(--' + tokenName + ')';
+            label.appendChild(swatch);
+          }
+          const text = document.createElement('span');
+          text.innerHTML = tokenName.replace(/-/g, '<span class="dash">-</span>');
+          label.appendChild(text);
+          label.title = '--' + tokenName;
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'token-input';
+          input.id = 'tok-' + tokenName;
+          input.spellcheck = false;
+          input.autocomplete = 'off';
+          input.addEventListener('input', () => {
+            setToken(tokenName, input.value.trim());
+            markDirty(input, tokenName);
+          });
+          inputs.set(tokenName, input);
+
+          row.appendChild(label);
+          row.appendChild(input);
+          groupEl.appendChild(row);
+        });
+
+        bodyEl.appendChild(groupEl);
+      });
+
+      document.getElementById('reset-btn').addEventListener('click', () => applyPreset(activePreset));
+
+      applyPreset('Default');
+    })();
+  </script>
+</body>
+</html>
